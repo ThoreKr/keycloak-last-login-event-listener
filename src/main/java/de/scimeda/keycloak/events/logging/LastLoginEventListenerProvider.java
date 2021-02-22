@@ -10,6 +10,7 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.RealmProvider;
 import org.keycloak.models.UserModel;
 
+import java.util.Map;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -34,6 +35,12 @@ public class LastLoginEventListenerProvider implements EventListenerProvider {
 
             if (user != null) {
                 log.info("Updating last login status for user: " + event.getUserId());
+
+                Map userAttrs = user.getAttributes();
+                if (userAttrs.containsKey("last-login")) {
+                    String userLastLogin = userAttrs.get("last-login").toString();
+                    user.setSingleAttribute("prior-login", userLastLogin.substring(1, userLastLogin.length()-1));
+                }
 
                 // Use current server time for login event
                 LocalDateTime loginTime = LocalDateTime.now();
