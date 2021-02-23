@@ -40,7 +40,9 @@ public class LastLoginEventListenerProvider implements EventListenerProvider {
                 Map<String, List<String>> userAttrs = user.getAttributes();
                 if (userAttrs.containsKey("last-login")) {
                     String userLastLogin = userAttrs.get("last-login").get(0);
-                    user.setSingleAttribute("prior-login", userLastLogin);
+                    if (userLastLogin != null && !userLastLogin.isEmpty()) {
+                        user.setSingleAttribute("prior-login", userLastLogin);
+                    }
                 }
 
                 // Use current server time for login event
