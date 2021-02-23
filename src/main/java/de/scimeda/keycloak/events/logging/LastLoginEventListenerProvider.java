@@ -39,9 +39,9 @@ public class LastLoginEventListenerProvider implements EventListenerProvider {
 
                 Map<String, List<String>> userAttrs = user.getAttributes();
                 if (userAttrs.containsKey("last-login")) {
-                    String userLastLogin = userAttrs.get("last-login").get(0);
+                    List<String> userLastLogin = userAttrs.get("last-login");
                     if (userLastLogin != null && !userLastLogin.isEmpty()) {
-                        user.setSingleAttribute("prior-login", userLastLogin);
+                        user.setSingleAttribute("prior-login", userLastLogin.get(0);
                     }
                 }
 
