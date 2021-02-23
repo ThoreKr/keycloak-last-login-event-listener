@@ -12,7 +12,8 @@ import org.keycloak.models.UserModel;
 
 import java.util.List;
 import java.util.Map;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 public class LastLoginEventListenerProvider implements EventListenerProvider {
@@ -46,7 +47,7 @@ public class LastLoginEventListenerProvider implements EventListenerProvider {
                 }
 
                 // Use current server time for login event
-                LocalDateTime loginTime = LocalDateTime.now();
+                OffsetDateTime loginTime = OffsetDateTime.now(ZoneOffset.UTC);
                 String loginTimeS = DateTimeFormatter.ISO_DATE_TIME.format(loginTime);
                 user.setSingleAttribute("last-login", loginTimeS);
             }
