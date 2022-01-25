@@ -22,7 +22,7 @@ version = '0.0.1-SNAPSHOT'
 description = 'last-login-event-listener'
 
 ext {
-    keycloakVersion = "16.1.0"
+    keycloakVersion = "16.1.1"
 }
 
 
