@@ -33,7 +33,7 @@ public class LastLoginEventListenerProvider implements EventListenerProvider {
         // log.infof("## NEW %s EVENT", event.getType());
         if (EventType.LOGIN.equals(event.getType())) {
             RealmModel realm = this.model.getRealm(event.getRealmId());
-            UserModel user = this.session.users().getUserById(event.getUserId(), realm);
+            UserModel user = this.session.users().getUserById(realm, event.getUserId());
 
             if (user != null) {
                 log.info("Updating last login status for user: " + event.getUserId());
