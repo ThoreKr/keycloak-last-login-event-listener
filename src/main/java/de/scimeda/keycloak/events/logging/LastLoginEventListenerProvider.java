@@ -10,11 +10,11 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.RealmProvider;
 import org.keycloak.models.UserModel;
 
-import java.util.List;
-import java.util.Map;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
 
 public class LastLoginEventListenerProvider implements EventListenerProvider {
 
@@ -31,27 +31,29 @@ public class LastLoginEventListenerProvider implements EventListenerProvider {
     @Override
     public void onEvent(Event event) {
         // log.infof("## NEW %s EVENT", event.getType());
-        if (EventType.LOGIN.equals(event.getType())) {
-            RealmModel realm = this.model.getRealm(event.getRealmId());
-            UserModel user = this.session.users().getUserById(realm, event.getUserId());
+        if (!EventType.LOGIN.equals(event.getType())) {
+            return;
+        }
+        RealmModel realm = this.model.getRealm(event.getRealmId());
+        UserModel user = this.session.users().getUserById(realm, event.getUserId());
 
-            if (user != null) {
-                log.info("Updating last login status for user: " + event.getUserId());
+        if (user == null) {
+            return;
+        }
+        log.info("Updating last login status for user: " + event.getUserId());
 
-                Map<String, List<String>> userAttrs = user.getAttributes();
-                if (userAttrs.containsKey("last-login")) {
-                    List<String> userLastLogin = userAttrs.get("last-login");
-                    if (userLastLogin != null && !userLastLogin.isEmpty()) {
-                        user.setSingleAttribute("prior-login", userLastLogin.get(0));
-                    }
-                }
-
-                // Use current server time for login event
-                OffsetDateTime loginTime = OffsetDateTime.now(ZoneOffset.UTC);
-                String loginTimeS = DateTimeFormatter.ISO_DATE_TIME.format(loginTime);
-                user.setSingleAttribute("last-login", loginTimeS);
+        Map<String, List<String>> userAttrs = user.getAttributes();
+        if (userAttrs.containsKey("last-login")) {
+            List<String> userLastLogin = userAttrs.get("last-login");
+            if (userLastLogin != null && !userLastLogin.isEmpty()) {
+                user.setSingleAttribute("prior-login", userLastLogin.get(0));
             }
         }
+
+        // Use current server time for login event
+        OffsetDateTime loginTime = OffsetDateTime.now(ZoneOffset.UTC);
+        String loginTimeS = DateTimeFormatter.ISO_DATE_TIME.format(loginTime);
+        user.setSingleAttribute("last-login", loginTimeS);
     }
 
     @Override
