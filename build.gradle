@@ -6,7 +6,6 @@
 
 plugins {
     id 'java'
-    id 'maven-publish'
     id 'idea'
 }
 
@@ -22,7 +21,7 @@ version = '0.0.1-SNAPSHOT'
 description = 'last-login-event-listener'
 
 ext {
-    keycloakVersion = "20.0.2"
+    keycloakVersion = "24.0.2"
 }
 
 

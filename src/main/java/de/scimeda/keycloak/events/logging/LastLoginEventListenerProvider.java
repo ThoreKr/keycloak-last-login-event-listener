@@ -6,15 +6,11 @@ import org.keycloak.events.EventListenerProvider;
 import org.keycloak.events.EventType;
 import org.keycloak.events.admin.AdminEvent;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.RealmModel;
 import org.keycloak.models.RealmProvider;
-import org.keycloak.models.UserModel;
 
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
 
 public class LastLoginEventListenerProvider implements EventListenerProvider {
 
@@ -30,29 +26,28 @@ public class LastLoginEventListenerProvider implements EventListenerProvider {
 
     @Override
     public void onEvent(Event event) {
-        // log.infof("## NEW %s EVENT", event.getType());
         if (!EventType.LOGIN.equals(event.getType())) {
             return;
         }
-        RealmModel realm = this.model.getRealm(event.getRealmId());
-        UserModel user = this.session.users().getUserById(realm, event.getUserId());
+        var realm = model.getRealm(event.getRealmId());
+        var user = session.users().getUserById(realm, event.getUserId());
 
         if (user == null) {
             return;
         }
-        log.info("Updating last login status for user: " + event.getUserId());
+        log.info("Updating last login status for user: " + user.getUsername());
 
-        Map<String, List<String>> userAttrs = user.getAttributes();
+        var userAttrs = user.getAttributes();
         if (userAttrs.containsKey("last-login")) {
-            List<String> userLastLogin = userAttrs.get("last-login");
+            var userLastLogin = userAttrs.get("last-login");
             if (userLastLogin != null && !userLastLogin.isEmpty()) {
                 user.setSingleAttribute("prior-login", userLastLogin.get(0));
             }
         }
 
         // Use current server time for login event
-        OffsetDateTime loginTime = OffsetDateTime.now(ZoneOffset.UTC);
-        String loginTimeS = DateTimeFormatter.ISO_DATE_TIME.format(loginTime);
+        var loginTime = ZonedDateTime.now(ZoneOffset.UTC);
+        var loginTimeS = DateTimeFormatter.ISO_DATE_TIME.format(loginTime);
         user.setSingleAttribute("last-login", loginTimeS);
     }
 
