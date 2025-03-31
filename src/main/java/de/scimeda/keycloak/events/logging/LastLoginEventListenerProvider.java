@@ -8,9 +8,8 @@ import org.keycloak.events.admin.AdminEvent;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmProvider;
 
+import java.time.Instant;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class LastLoginEventListenerProvider implements EventListenerProvider {
 
@@ -45,10 +44,12 @@ public class LastLoginEventListenerProvider implements EventListenerProvider {
             }
         }
 
-        // Use current server time for login event
-        var loginTime = ZonedDateTime.now(ZoneOffset.UTC);
-        var loginTimeS = DateTimeFormatter.ISO_DATE_TIME.format(loginTime);
+        // event timestamp
+        var loginTime = event.getTime();
+        var loginTimeS = Instant.ofEpochMilli(loginTime).atOffset(ZoneOffset.UTC).toString();
+
         user.setSingleAttribute("last-login", loginTimeS);
+        user.setSingleAttribute("last-login-timestamp", Long.toString(loginTime));
     }
 
     @Override
